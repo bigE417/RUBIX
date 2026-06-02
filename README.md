@@ -29,7 +29,7 @@ https://your-rubix-app.vercel.app
 
 RUBIX stores cube state as cubie data: corner permutation, corner orientation, edge permutation, and edge orientation. Turn-button scrambles update that model directly. Painted input is first converted into a 54-facelet string, validated, and translated into the same cubie model.
 
-The solver uses a two-phase search:
+The solver uses a two-phase search algorithm (the conventional search with bfs and all is too slow and gives less optimal solutions with more number of moves):
 
 - Phase 1 reduces orientation and slice coordinates to move the cube into a restricted subgroup.
 - Phase 2 solves the remaining permutation state with a smaller move set.
