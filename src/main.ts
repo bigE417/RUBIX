@@ -37,6 +37,7 @@ let interactionsLocked = false;
 let paintingEnabled = false;
 const moveButtons: HTMLButtonElement[] = [];
 const swatchButtons: HTMLButtonElement[] = [];
+const COLOR_FACES = ["U", "R", "F", "D", "L", "B"] as const;
 
 function setStatus(text: string, kind: "ok" | "err" | "busy" | "" = "") {
   statusEl.textContent = text;
@@ -69,6 +70,16 @@ function invertMoveIndex(m: number): number {
   if (mod === 0) return face * 3 + 2;
   if (mod === 2) return face * 3;
   return face * 3 + 1;
+}
+
+function colorCountError(facelets: string): string {
+  const counts = Object.fromEntries(COLOR_FACES.map((face) => [face, 0])) as Record<string, number>;
+  for (const ch of facelets) {
+    if (ch in counts) counts[ch]++;
+  }
+  const wrong = COLOR_FACES.filter((face) => counts[face] !== 9);
+  if (!wrong.length) return "";
+  return `Each color should appear exactly 9 times. Current counts: ${COLOR_FACES.map((face) => `${face}=${counts[face]}`).join(", ")}. Reset to edit again.`;
 }
 
 function applySolutionStep(step: number): void {
@@ -201,7 +212,7 @@ solveBtn.addEventListener("click", () => {
   solutionStartCube = null;
 
   if (!controller.isFullyPainted()) {
-    setStatus("Cube must be fully colored (9 of each U R F D L B). Reset to edit again.", "err");
+    setStatus(colorCountError(facelets) || "Each color should appear exactly 9 times. Reset to edit again.", "err");
     solveBtn.disabled = true;
     return;
   }
@@ -209,7 +220,10 @@ solveBtn.addEventListener("click", () => {
   const startCube = solvedCube();
   const translateErr = validateAndTranslate(facelets, startCube);
   if (translateErr) {
-    setStatus(`${translateErr} Reset to edit again.`, "err");
+    const message = translateErr === "Each color must appear exactly 9 times."
+      ? colorCountError(facelets)
+      : "Invalid configuration. Reset to edit again.";
+    setStatus(message, "err");
     solveBtn.disabled = true;
     return;
   }

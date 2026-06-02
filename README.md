@@ -1,67 +1,101 @@
 # RUBIX
 
-RUBIX is a browser-based 3D Rubik's Cube solver built with Vite, TypeScript, and Three.js. It lets you scramble a virtual cube, paint a real cube state onto the model, compute a solution, and step through the moves directly on the 3D preview.
+RUBIX is a public web app for solving a 3D Rubik's Cube in the browser. Users can scramble the virtual cube, paint the state of a real cube, solve it, and step through the solution moves on the preview.
 
-## Highlights
+## Live App
 
-- Interactive Three.js cube with orbit controls
-- Manual turn pad for U, R, F, D, L, and B moves
-- Paint mode for entering a physical cube state
-- Two-phase solver implemented in TypeScript
-- IDA* search over precomputed move/pruning tables
-- Web Worker solver runtime so the UI stays responsive
-- Step-by-step solution playback with copy support
+Add the deployed Vercel link here after publishing:
 
-## Solver Algorithm
+```txt
+https://your-rubix-app.vercel.app
+```
 
-RUBIX uses a two-phase solving approach inspired by Kociemba-style cubie coordinates.
+## What It Does
 
-Phase 1 searches for a sequence that moves the cube into a restricted subgroup by reducing orientation and slice coordinates. Phase 2 then solves the remaining permutation state using a smaller move set. The search is implemented with iterative deepening A* (IDA*), using pruning tables to avoid exploring branches that cannot lead to a solution within the current depth.
+- Shows an interactive 3D cube preview
+- Supports manual scramble moves: U, R, F, D, L, and B
+- Lets users paint a real cube state onto the model
+- Validates color counts and cube configuration before solving
+- Computes a practical solution under 25 moves using RUBIX
+- Lets users step through the solution move by move
 
-The cube state is stored as cubie arrays for corner permutation, corner orientation, edge permutation, and edge orientation. Painted sticker input is translated from a 54-facelet string into that cubie model before solving, which keeps manual input and turn-button scrambling on the same solver path.
+## How to Use
+
+1. Open the hosted RUBIX link.
+2. Scramble with the move buttons, or turn `Paint on` and fill the stickers from a real cube.
+3. Press `Solve cube`.
+4. Use `Next`, `Prev`, and `Scramble` to inspect the solution.
+5. Press `Reset to solved` to unlock editing and start again.
+
+## Deployment
+
+RUBIX is meant to be hosted as a Vite static app. The easiest deployment path is Vercel.
+
+1. Push this project to GitHub.
+2. Open [Vercel](https://vercel.com).
+3. Create a new project and import the GitHub repository.
+4. Use the Vite preset. If Vercel asks for settings, use:
+
+```txt
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm install
+```
+
+5. Deploy.
+
+Vercel will install dependencies, run the build, and host the generated `dist` folder automatically. You do not need to manually upload `dist`.
+
+## Solver
+
+RUBIX stores cube state as cubie data: corner permutation, corner orientation, edge permutation, and edge orientation. Turn-button scrambles update that model directly. Painted input is first converted into a 54-facelet string, validated, and translated into the same cubie model.
+
+The solver uses a two-phase search:
+
+- Phase 1 reduces orientation and slice coordinates to move the cube into a restricted subgroup.
+- Phase 2 solves the remaining permutation state with a smaller move set.
+
+The search uses iterative deepening A* with precomputed move and pruning tables. Solver setup and search run inside a Web Worker so the page stays responsive.
 
 ## Performance
 
-Solver tables are initialized in a Web Worker. The first solve may take longer because the worker builds the tables, while later solves reuse the initialized data. On typical laptop hardware, the app is designed to stay interactive while searching and usually returns practical solutions under 25 moves using RUBIX.
+The first solve can be slower because lookup tables are initialized. Later solves reuse those tables. The 3D view is lightweight: stickers are simple Three.js meshes, and cube state updates instantly.
 
-The rendered cube is lightweight: each sticker is a simple Three.js mesh, and moves update the cube state instantly instead of running expensive physical simulations.
+## Tech Stack
 
-## Architecture
+- Vite
+- TypeScript
+- Three.js
+- Web Workers
+- Custom cubie-model solver
 
-- `src/main.ts` connects UI controls, paint mode, solve requests, and solution stepping.
-- `src/cube/cubeVisual.ts` renders the 3D cube and handles sticker picking.
-- `src/cube/cubeController.ts` owns the current cube state and painted facelets.
-- `src/cube/faceletLayout.ts` maps visible sticker meshes to solver facelet IDs.
-- `src/solver/cube.ts` implements cubie state and move application.
-- `src/solver/facelet.ts` validates and translates painted facelets.
-- `src/solver/tables.ts` builds move and pruning tables.
-- `src/solver/search.ts` runs the two-phase IDA* search.
-- `src/solver/worker.ts` keeps initialization and solving off the main thread.
+## Project Structure
 
-## Quick Start
+```txt
+RUBIX/
+  index.html
+  package.json
+  README.md
+  src/
+    main.ts
+    styles.css
+    cube/
+    solver/
+```
+
+## Developer Notes
+
+For local development, install dependencies and start Vite:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite, usually `http://localhost:5173`.
-
-## Build
-
-```bash
-npm run build
-npm run preview
-```
-
-## Test
+For solver/layout checks:
 
 ```bash
 npm run test:solver
 ```
 
-The solver test checks facelet layout, corner/edge mapping, single-turn validation, and basic solve behavior.
-
-## Repository Notes
-
-`node_modules/` and `dist/` are ignored because they are generated folders. Package README and LICENSE files inside `node_modules` belong to third-party dependencies and should not be edited or deleted from installed packages.
+`node_modules/` and `dist/` are ignored because they are generated folders.
