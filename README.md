@@ -5,7 +5,7 @@ RUBIX is a public web app for solving a 3D Rubik's Cube in the browser. Users ca
 ## Live App
 
 ```txt
-https://rubix.vercel.app
+h[ttps://rubix.vercel.app](https://rubix-neon-ten.vercel.app/)
 ```
 
 ## What It Does
