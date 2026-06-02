@@ -4,7 +4,7 @@ RUBIX is a public web app for solving a 3D Rubik's Cube in the browser. Users ca
 
 ## Live App
 
-Add the deployed Vercel link here after publishing:
+Open RUBIX here after deployment:
 
 ```txt
 https://your-rubix-app.vercel.app
@@ -26,25 +26,6 @@ https://your-rubix-app.vercel.app
 3. Press `Solve cube`.
 4. Use `Next`, `Prev`, and `Scramble` to inspect the solution.
 5. Press `Reset to solved` to unlock editing and start again.
-
-## Deployment
-
-RUBIX is meant to be hosted as a Vite static app. The easiest deployment path is Vercel.
-
-1. Push this project to GitHub.
-2. Open [Vercel](https://vercel.com).
-3. Create a new project and import the GitHub repository.
-4. Use the Vite preset. If Vercel asks for settings, use:
-
-```txt
-Build Command: npm run build
-Output Directory: dist
-Install Command: npm install
-```
-
-5. Deploy.
-
-Vercel will install dependencies, run the build, and host the generated `dist` folder automatically. You do not need to manually upload `dist`.
 
 ## Solver
 
@@ -85,11 +66,17 @@ RUBIX/
 
 ## Developer Notes
 
-For local development, install dependencies and start Vite:
+For local development:
 
 ```bash
 npm install
 npm run dev
+```
+
+For a production build:
+
+```bash
+npm run build
 ```
 
 For solver/layout checks:
